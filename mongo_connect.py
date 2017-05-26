@@ -19,12 +19,19 @@ def add():
     user.insert({'name' : 'Dan', 'language' : 'C'})
     return 'All users added!'
 
+@app.route('/newtable', methods=['GET'])
+def addmore():
+    user = mongo.db.dogs
+    user.insert({'name': 'jake', 'type': 'golden'})
+    user.insert({'name': 'jax', 'type': 'lab'})
+    return 'dogs added'
+
 @app.route('/add', methods=['POST'])
 def sendadd():
     user = mongo.db.users
 
-    # name = json.loads(request.data['name'])
-    # language = json.loads(request.data['language'])
+    # name = json.loads(request.data['name']) //string
+    # language = json.loads(request.data['language']) //string
 
     name = request.json['name']
     language = request.json['language']
@@ -36,20 +43,12 @@ def sendadd():
 
     return jsonify({'result': output})
 
-@app.route('/newtable', methods=['GET'])
-def addmore():
-    user = mongo.db.dogs
-    user.insert({'name': 'jake', 'type': 'golden'})
-    user.insert({'name': 'jax', 'type': 'lab'})
-    return 'dogs added'
 
 @app.route('/find/<name>')
 def find(name):
     user = mongo.db.users
     findUser = user.find_one({'name':name})
     return jsonify({'result': {'name':findUser['name'], 'language':findUser['language']}})
-
-# @app.route('/addnew', methods=['POST'])
 
 @app.route('/update', methods=['POST'])
 def update():
@@ -59,7 +58,6 @@ def update():
     changeName = request.json['newname']
 
     oldPerson = user.find_one({'name': findName})
-    # print(changeName)
     oldPerson['name'] = changeName
     user.save(oldPerson)
     output = {'name': oldPerson['name'], 'language': oldPerson['language']}
