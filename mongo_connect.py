@@ -43,12 +43,11 @@ def addmore():
     user.insert({'name': 'jax', 'type': 'lab'})
     return 'dogs added'
 
-@app.route('/find')
-def find():
+@app.route('/find/<name>')
+def find(name):
     user = mongo.db.users
-    kyle = user.find_one({'name':'Kyle'})
-    # return 'this is ' + kyle['name'] + ' and he speaks ' + kyle['language']
-    return jsonify({'result': kyle['name']})
+    findUser = user.find_one({'name':name})
+    return jsonify({'result': {'name':findUser['name'], 'language':findUser['language']}})
 
 # @app.route('/addnew', methods=['POST'])
 
@@ -60,8 +59,8 @@ def update():
     changeName = request.json['newname']
 
     oldPerson = user.find_one({'name': findName})
-    print(changeName)
-    # oldPerson['name'] = changeName
+    # print(changeName)
+    oldPerson['name'] = changeName
     user.save(oldPerson)
     output = {'name': oldPerson['name'], 'language': oldPerson['language']}
     return jsonify({'result': output})
@@ -74,13 +73,12 @@ def get_all():
         output.append({'name': item['name'], 'language': item['language']})
 
     return jsonify({'result': output})
-    # return output
 
 
-@app.route('/remove')
-def remove():
+@app.route('/remove/<name>')
+def remove(name):
     user = mongo.db.users
-    userToRemove = framework.user.find_one({'name' : 'Bill'})
+    userToRemove = user.find_one({'name' : name})
     user.remove(userToRemove)
     return 'user removed'
 
