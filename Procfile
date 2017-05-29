@@ -1,1 +1,1 @@
-web: python mongo_connect.py
+web: python3 mongo_connect.py
