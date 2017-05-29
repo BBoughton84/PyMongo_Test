@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 import json
+import requests
+from pprint import pprint
+# import urllib
 
 app = Flask(__name__)
 
@@ -8,6 +11,14 @@ app.config['MONGO_DBNAME'] = 'test_db'
 app.config['MONGO_URI'] = 'mongodb://jake:test123@ds153501.mlab.com:53501/test_db'
 
 mongo = PyMongo(app)
+
+@app.route('/testingAPI/<barcode>')
+def getBackData(barcode):
+    source = requests.get('https://api.nutritionix.com/v1_1/item?upc=%s&appId=84f8ed7f&appKey=d476c24cdcdf18749e8ca0e5b9bce022' % barcode)
+
+    pprint(source.json()["brand_name"])
+
+    return jsonify({'result':source.json()})
 
 @app.route('/manadd')
 def add():
