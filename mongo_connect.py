@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'test_db'
 app.config['MONGO_URI'] = 'mongodb://jake:test123@ds153501.mlab.com:53501/test_db'
 
+port = int(os.environ.get('PORT', 5000))
+
 mongo = PyMongo(app)
 
 @app.route('/testingAPI/<barcode>')
