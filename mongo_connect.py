@@ -25,21 +25,26 @@ def getBackData(barcode):
 
 @app.route('/insert/<barcode>')
 def inserting(barcode):
-    source = requests.get('https://api.nutritionix.com/v1_1/item?upc=%s&appId=84f8ed7f&appKey=d476c24cdcdf18749e8ca0e5b9bce022' % barcode)
-    pprint(source.json()["brand_name"])
-    brandName = source.json()["brand_name"]
-    pprint(source.json()["item_name"])
-    itemName = source.json()["item_name"]
-    pprint(source.json()["nf_serving_size_qty"])
-    serveSize = source.json()["nf_serving_size_qty"]
-    pprint(source.json()["nf_servings_per_container"])
-    servePerCont = source.json()["nf_servings_per_container"]
-    pprint(source.json()["nf_serving_size_unit"])
-    units = source.json()["nf_serving_size_unit"]
 
-    item = mongo.db.foods
-    item.insert({'brand_name':brandName, 'item_name':itemName, 'size':serveSize, 'servings_per_container':servePerCont, 'units':units, 'barcode':barcode})
-    return "item added " + brandName + " " + itemName
+    food = mongo.db.foods
+    itemToIncrease = food.find_one({'barcode':barcode})
+    if(itemToIncrease):
+        print("There is something in here, lets add one to the QTY")
+        itemToIncrease['quantity'] += 1
+        food.save(itemToIncrease)
+        output = {'brand_name': itemToIncrease['brand_name'], 'item_name': itemToIncrease['item_name'], 'quantity':itemToIncrease['quantity']}
+        return jsonify({'result': output})
+
+    else:
+        source = requests.get('https://api.nutritionix.com/v1_1/item?upc=%s&appId=84f8ed7f&appKey=d476c24cdcdf18749e8ca0e5b9bce022' % barcode)
+        brandName = source.json()["brand_name"]
+        itemName = source.json()["item_name"]
+        serveSize = source.json()["nf_serving_size_qty"]
+        servePerCont = source.json()["nf_servings_per_container"]
+        units = source.json()["nf_serving_size_unit"]
+
+        food.insert({'brand_name':brandName, 'item_name':itemName, 'size':serveSize, 'servings_per_container':servePerCont, 'units':units, 'barcode':barcode, 'quantity':1})
+        return "item added " + brandName + " " + itemName
 
 
 @app.route('/manadd')
@@ -115,7 +120,8 @@ def show_foods():
         'item_name':food['item_name'],
         'size':food['size'],
         'servings_per_container':food['servings_per_container'],
-        'units':food['units']
+        'units':food['units'],
+        'quantity':food['quantity']
         })
 
     return jsonify({'result':output})
@@ -125,8 +131,14 @@ def trash(barcode):
     food = mongo.db.foods
     itemToTrash = food.find_one({'barcode':barcode})
     print(itemToTrash)
-    food.remove(itemToTrash)
-    return "item removed"
+    if(itemToTrash):
+        print("There is something in here")
+        food.remove(itemToTrash)
+        return "item removed"
+
+    else:
+        print("I found nothing")
+        return "I can not remove an item that doesn't exsist"
 
 
 @app.route('/remove/<name>')
