@@ -120,6 +120,15 @@ def show_foods():
 
     return jsonify({'result':output})
 
+@app.route('/throwaway/<barcode>')
+def trash(barcode):
+    food = mongo.db.foods
+    itemToTrash = food.find_one({'barcode':barcode})
+    print(itemToTrash)
+    # food.remove(itemToTrash)
+    return "item removed"
+
+
 @app.route('/remove/<name>')
 def remove(name):
     user = mongo.db.users
