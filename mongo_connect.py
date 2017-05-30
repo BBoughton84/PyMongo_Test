@@ -125,7 +125,7 @@ def trash(barcode):
     food = mongo.db.foods
     itemToTrash = food.find_one({'barcode':barcode})
     print(itemToTrash)
-    # food.remove(itemToTrash)
+    food.remove(itemToTrash)
     return "item removed"
 
 
