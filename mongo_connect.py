@@ -130,7 +130,6 @@ def show_foods():
 def trash(barcode):
     food = mongo.db.foods
     itemToTrash = food.find_one({'barcode':barcode})
-    print(itemToTrash['quantity'])
     if(itemToTrash['quantity']==1):
         print("There is ONE in here")
         # food.remove(itemToTrash)
