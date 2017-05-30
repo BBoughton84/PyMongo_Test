@@ -133,12 +133,12 @@ def trash(barcode):
     if(itemToTrash):
         if(itemToTrash['quantity']==1):
             print("There is ONE in here")
-            # food.remove(itemToTrash)
+            food.remove(itemToTrash)
             return "item removed"
         elif(itemToTrash['quantity'] > 1):
             print("There is more than one, less decrease by one")
-            # itemToTrash['quantity'] -= 1
-            # food.save(itemToTrash)
+            itemToTrash['quantity'] -= 1
+            food.save(itemToTrash)
             return "decreased the quantity by one"
     else:
         print("I found nothing")
