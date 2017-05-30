@@ -23,6 +23,25 @@ def getBackData(barcode):
 
     return jsonify({'result':source.json()})
 
+@app.route('/insert/<barcode>')
+def inserting(barcode):
+    source = requests.get('https://api.nutritionix.com/v1_1/item?upc=%s&appId=84f8ed7f&appKey=d476c24cdcdf18749e8ca0e5b9bce022' % barcode)
+    pprint(source.json()["brand_name"])
+    brandName = source.json()["brand_name"]
+    pprint(source.json()["item_name"])
+    itemName = source.json()["item_name"]
+    pprint(source.json()["nf_serving_size_qty"])
+    serveSize = source.json()["nf_serving_size_qty"]
+    pprint(source.json()["nf_servings_per_container"])
+    servePerCont = source.json()["nf_servings_per_container"]
+    pprint(source.json()["nf_serving_size_unit"])
+    units = source.json()["nf_serving_size_unit"]
+
+    item = mongo.db.foods
+    item.insert({'brand_name':brandName, 'item_name':itemName, 'size':serveSize, 'servings_per_container':servePerCont, 'units':units, 'barcode':barcode})
+    return "item added " + brandName + " " + itemName
+
+
 @app.route('/manadd')
 def add():
     user = mongo.db.users
@@ -86,6 +105,20 @@ def get_all():
 
     return jsonify({'result': output})
 
+@app.route('/showfoods')
+def show_foods():
+    item = mongo.db.foods
+    output = []
+    for food in item.find():
+        output.append({
+        'brand_name':food['brand_name'],
+        'item_name':food['item_name'],
+        'size':food['size'],
+        'servings_per_container':food['servings_per_container'],
+        'units':food['units']
+        })
+
+    return jsonify({'result':output})
 
 @app.route('/remove/<name>')
 def remove(name):
