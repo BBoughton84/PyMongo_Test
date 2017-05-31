@@ -87,12 +87,20 @@ def persondateremove(name):
 def returndates():
     user = mongo.db.newdates
     output = []
-    for i in user.find():
-        output.append({'name':i['name'], 'type':i['type'], 'date_added':i['date_added'], 'date_removed':i['date_removed']})
-        time1 = i['date_added'][0]
-        time2 = i['date_removed'][0]
-        delta = time2-time1
-        print(str(delta))
+    for user in user.find():
+        diff=[]
+        for i in range(len(user['date_removed'])):
+            print(i)
+            time1 = user['date_added'][i]
+            time2 = user['date_removed'][i]
+            delta = time2-time1
+            diff.append(str(delta).split('.', 2)[0])
+        output.append({'name':user['name'], 'type':user['type'], 'date_added':user['date_added'], 'date_removed':user['date_removed'], 'date_difference':diff})
+
+        # time1 = i['date_added'][0]
+        # time2 = i['date_removed'][0]
+        # delta = time2-time1
+        # print(str(delta).split('.', 2)[0])
     return jsonify({'result': output})
 
 @app.route('/add', methods=['POST'])
