@@ -4,6 +4,7 @@ import json
 import requests
 from pprint import pprint
 import os
+import datetime 
 # import urllib
 
 app = Flask(__name__)
@@ -57,12 +58,28 @@ def add():
     user.insert({'name' : 'Dan', 'language' : 'C'})
     return 'All users added!'
 
-@app.route('/newtable', methods=['GET'])
-def addmore():
-    user = mongo.db.dogs
-    user.insert({'name': 'jake', 'type': 'golden'})
-    user.insert({'name': 'jax', 'type': 'lab'})
+@app.route('/insertdate', methods=['GET'])
+def insertdate():
+    user = mongo.db.insertdates
+    user.insert({'name': 'Billy', 'type': 'golden', 'date':[]})
+    user.insert({'name': 'Kyle', 'type': 'lab', 'date':[]})
     return 'dogs added'
+
+@app.route('/persondateadd/<name>')
+def persondate(name):
+    user = mongo.db.insertdates
+    userFound = user.find_one({'name': name})
+    userFound['date'].append(datetime.datetime.now())
+    user.save(userFound)
+    return "date added"
+
+@app.route('/returndates')
+def returndates():
+    user = mongo.db.insertdates
+    output = []
+    for i in user.find():
+        output.append({'name':i['name'], 'type':i['type'], 'date':i['date']})
+    return jsonify({'result': output})
 
 @app.route('/add', methods=['POST'])
 def sendadd():
@@ -133,16 +150,20 @@ def trash(barcode):
     if(itemToTrash):
         if(itemToTrash['quantity']==1):
             print("There is ONE in here")
-            food.remove(itemToTrash)
+            itemToTrash['quantity'] = 0
+            food.save(itemToTrash)
             return "item removed"
         elif(itemToTrash['quantity'] > 1):
             print("There is more than one, less decrease by one")
             itemToTrash['quantity'] -= 1
             food.save(itemToTrash)
             return "decreased the quantity by one"
+        else:
+            print("this item is at zero quantity")
+            return "this item is at zero quantity"
     else:
-        print("I found nothing")
-        return "I can not remove an item that doesn't exsist"
+        print("Item does not exist")
+        return "This item does not exist"
 
 
 @app.route('/remove/<name>')
