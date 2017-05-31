@@ -127,27 +127,27 @@ def find(name):
     findUser = user.find_one({'name':name})
     return jsonify({'result': {'name':findUser['name'], 'language':findUser['language']}})
 
-@app.route('/update', methods=['POST'])
-def update():
-    user = mongo.db.users
+# @app.route('/update', methods=['POST'])
+# def update():
+#     user = mongo.db.users
+#
+#     findName = request.json['oldname']
+#     changeName = request.json['newname']
+#
+#     oldPerson = user.find_one({'name': findName})
+#     oldPerson['name'] = changeName
+#     user.save(oldPerson)
+#     output = {'name': oldPerson['name'], 'language': oldPerson['language']}
+#     return jsonify({'result': output})
 
-    findName = request.json['oldname']
-    changeName = request.json['newname']
-
-    oldPerson = user.find_one({'name': findName})
-    oldPerson['name'] = changeName
-    user.save(oldPerson)
-    output = {'name': oldPerson['name'], 'language': oldPerson['language']}
-    return jsonify({'result': output})
-
-@app.route('/framework', methods=['GET'])
-def get_all():
-    user = mongo.db.users
-    output = []
-    for item in user.find():
-        output.append({'name': item['name'], 'language': item['language']})
-
-    return jsonify({'result': output})
+# @app.route('/framework', methods=['GET'])
+# def get_all():
+#     user = mongo.db.users
+#     output = []
+#     for item in user.find():
+#         output.append({'name': item['name'], 'language': item['language']})
+#
+#     return jsonify({'result': output})
 
 @app.route('/showfoods')
 def show_foods():
