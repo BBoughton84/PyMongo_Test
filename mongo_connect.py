@@ -4,7 +4,8 @@ import json
 import requests
 from pprint import pprint
 import os
-import datetime 
+import datetime
+from datetime import timedelta
 # import urllib
 
 app = Flask(__name__)
@@ -60,25 +61,38 @@ def add():
 
 @app.route('/insertdate', methods=['GET'])
 def insertdate():
-    user = mongo.db.insertdates
-    user.insert({'name': 'Billy', 'type': 'golden', 'date':[]})
-    user.insert({'name': 'Kyle', 'type': 'lab', 'date':[]})
+    user = mongo.db.newdates
+    user.insert({'name': 'Bob', 'type': 'golden', 'date_added':[], 'date_removed':[]})
+    user.insert({'name': 'Kait', 'type': 'lab', 'date_added':[], 'date_removed':[]})
     return 'dogs added'
 
 @app.route('/persondateadd/<name>')
-def persondate(name):
-    user = mongo.db.insertdates
+def persondateadd(name):
+    user = mongo.db.newdates
     userFound = user.find_one({'name': name})
-    userFound['date'].append(datetime.datetime.now())
+    userFound['date_added'].append(datetime.datetime.now())
     user.save(userFound)
+    return "date added"
+
+@app.route('/persondateremove/<name>')
+def persondateremove(name):
+    user = mongo.db.newdates
+    userFound = user.find_one({'name': name})
+    userFound['date_removed'].append(datetime.datetime.now())
+    user.save(userFound)
+    print(userFound['date_removed'][1])
     return "date added"
 
 @app.route('/returndates')
 def returndates():
-    user = mongo.db.insertdates
+    user = mongo.db.newdates
     output = []
     for i in user.find():
-        output.append({'name':i['name'], 'type':i['type'], 'date':i['date']})
+        output.append({'name':i['name'], 'type':i['type'], 'date_added':i['date_added'], 'date_removed':i['date_removed']})
+        time1 = i['date_added'][0]
+        time2 = i['date_removed'][0]
+        delta = time2-time1
+        print(str(delta))
     return jsonify({'result': output})
 
 @app.route('/add', methods=['POST'])
