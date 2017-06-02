@@ -33,6 +33,7 @@ def inserting(barcode):
     if(itemToIncrease):
         print("There is something in here, lets add one to the QTY")
         itemToIncrease['quantity'] += 1
+        itemToIncrease['date_added'].append(datetime.datetime.now())
         food.save(itemToIncrease)
         output = {'brand_name': itemToIncrease['brand_name'], 'item_name': itemToIncrease['item_name'], 'quantity':itemToIncrease['quantity']}
         return jsonify({'result': output})
@@ -62,7 +63,7 @@ def add():
 @app.route('/insertdate', methods=['GET'])
 def insertdate():
     user = mongo.db.newdates
-    user.insert({'name': 'Bob', 'type': 'golden', 'date_added':[], 'date_removed':[]})
+        user.insert({'name': 'Bob', 'type': 'golden', 'date_added':[], 'date_removed':[]})
     user.insert({'name': 'Kait', 'type': 'lab', 'date_added':[], 'date_removed':[]})
     return 'dogs added'
 
