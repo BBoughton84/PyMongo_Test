@@ -11,4 +11,4 @@ pprint==0.1
 pymongo==3.4.0
 requests==2.16.5
 urllib3==1.21.1
-Werkzeug==0.12.2
+Werkzeug==0.15.3
